@@ -50,7 +50,7 @@ python3 /Users/angela/Documents/08_知识博主/paper-notes-cn/scripts/generate_
   --output-dir /Users/angela/Documents/08_知识博主/paper-notes-cn/drafts \
   --max-papers 10 \
   --use-openai \
-  --openai-model gpt-5.4
+  --openai-model gpt-5
 ```
 
 ## 草稿规范

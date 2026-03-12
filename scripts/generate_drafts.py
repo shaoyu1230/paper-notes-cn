@@ -129,7 +129,7 @@ def main() -> int:
     parser.add_argument("--max-papers", type=int, default=20)
     parser.add_argument("--use-llm", action="store_true", help="use LLM_COMMAND to generate body")
     parser.add_argument("--use-openai", action="store_true", help="use OpenAI API to generate body")
-    parser.add_argument("--openai-model", default="gpt-5.4", help="OpenAI model ID")
+    parser.add_argument("--openai-model", default="gpt-5", help="OpenAI model ID")
     parser.add_argument("--openai-max-output-tokens", type=int, default=1200)
     parser.add_argument("--prompt-template", default=None, help="prompt template path")
     parser.add_argument("--fallback-body", default=None, help="fallback body template path")
