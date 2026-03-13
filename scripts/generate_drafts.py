@@ -31,6 +31,23 @@ def read_text(path: str) -> str:
         return f.read()
 
 
+def load_env() -> None:
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    env_path = os.path.join(root, ".env")
+    if not os.path.exists(env_path):
+        return
+    with open(env_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if key:
+                os.environ[key] = value
+
+
 def build_front_matter(paper: Dict) -> str:
     authors = paper.get("authors") or []
     categories = paper.get("categories") or []
@@ -287,6 +304,7 @@ def run_hizui(prompt: str, model: str, max_output_tokens: int, base_url: str) ->
 
 
 def main() -> int:
+    load_env()
     parser = argparse.ArgumentParser(description="Generate Chinese draft notes from arXiv JSON.")
     parser.add_argument("--input-json", required=True, help="arXiv filtered JSON path")
     parser.add_argument("--output-dir", required=True, help="draft output directory")
