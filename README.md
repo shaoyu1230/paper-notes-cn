@@ -98,6 +98,21 @@ python3 /Users/angela/Documents/08_知识博主/paper-notes-cn/scripts/generate_
   --gemini-base-url https://api.hizui.cn
 ```
 
+8) 使用 hizui（按 test_hizui.py 方式）生成中文草稿
+
+```bash
+pip install -r /Users/angela/Documents/08_知识博主/paper-notes-cn/requirements.txt
+export HIZUI_API_KEY="YOUR_API_KEY"
+
+python3 /Users/angela/Documents/08_知识博主/paper-notes-cn/scripts/generate_drafts.py \
+  --input-json /Users/angela/Documents/08_知识博主/paper-notes-cn/data/arxiv_filtered.json \
+  --output-dir /Users/angela/Documents/08_知识博主/paper-notes-cn/drafts \
+  --max-papers 10 \
+  --provider hizui \
+  --hizui-model MiniMax-M2.5 \
+  --hizui-base-url https://api.hizui.cn/v1
+```
+
 ## 每日自动化
 
 编辑配置文件：

@@ -249,6 +249,43 @@ def run_gemini(prompt: str, model: str, max_output_tokens: int, base_url: str) -
         return None
 
 
+def run_hizui(prompt: str, model: str, max_output_tokens: int, base_url: str) -> Optional[str]:
+    try:
+        from openai import OpenAI
+    except ImportError:
+        print("OpenAI SDK not installed. Run: pip install openai", file=sys.stderr)
+        return None
+
+    api_key = os.environ.get("HIZUI_API_KEY", "").strip()
+    if not api_key:
+        print("HIZUI_API_KEY is not set.", file=sys.stderr)
+        return None
+
+    client = OpenAI(api_key=api_key, base_url=base_url)
+    try:
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "你是中文科技写作者，请基于给定论文信息生成中文解读草稿。",
+                },
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.3,
+            max_tokens=max_output_tokens,
+        )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Hizui request failed: {exc}", file=sys.stderr)
+        return None
+
+    try:
+        content = resp.choices[0].message.content
+        return content.strip() if content else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate Chinese draft notes from arXiv JSON.")
     parser.add_argument("--input-json", required=True, help="arXiv filtered JSON path")
@@ -256,7 +293,7 @@ def main() -> int:
     parser.add_argument("--max-papers", type=int, default=20)
     parser.add_argument("--force", action="store_true", help="overwrite existing drafts")
     parser.add_argument("--use-llm", action="store_true", help="use LLM_COMMAND to generate body")
-    parser.add_argument("--provider", default="openai", choices=["openai", "qwen", "minimax", "gemini"])
+    parser.add_argument("--provider", default="openai", choices=["openai", "qwen", "minimax", "gemini", "hizui"])
     parser.add_argument("--openai-model", default="gpt-5", help="OpenAI model ID")
     parser.add_argument("--qwen-model", default="qwen-plus", help="Qwen model ID")
     parser.add_argument(
@@ -275,6 +312,12 @@ def main() -> int:
         "--gemini-base-url",
         default="https://api.hizui.cn",
         help="Gemini OpenAI-compatible base_url",
+    )
+    parser.add_argument("--hizui-model", default="MiniMax-M2.5", help="Hizui model ID")
+    parser.add_argument(
+        "--hizui-base-url",
+        default="https://api.hizui.cn/v1",
+        help="Hizui OpenAI-compatible base_url",
     )
     parser.add_argument("--max-output-tokens", type=int, default=1200)
     parser.add_argument("--prompt-template", default=None, help="prompt template path")
@@ -354,6 +397,15 @@ def main() -> int:
             )
             if gemini_body:
                 body = gemini_body
+        elif args.provider == "hizui":
+            hizui_body = run_hizui(
+                prompt=prompt,
+                model=args.hizui_model,
+                max_output_tokens=args.max_output_tokens,
+                base_url=args.hizui_base_url,
+            )
+            if hizui_body:
+                body = hizui_body
         elif args.use_llm and llm_command:
             llm_body = run_llm(prompt, llm_command)
             if llm_body:

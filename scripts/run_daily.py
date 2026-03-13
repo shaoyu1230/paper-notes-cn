@@ -68,6 +68,10 @@ def main() -> int:
         if not (os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")):
             print("GEMINI_API_KEY (or GOOGLE_API_KEY) is not set.", file=sys.stderr)
             return 1
+    elif provider == "hizui":
+        if not os.environ.get("HIZUI_API_KEY"):
+            print("HIZUI_API_KEY is not set.", file=sys.stderr)
+            return 1
 
     arxiv_cmd = [
         "python3",
@@ -127,6 +131,10 @@ def main() -> int:
         cfg.get("gemini_model", "MiniMax-M2.5"),
         "--gemini-base-url",
         cfg.get("gemini_base_url", "https://api.hizui.cn"),
+        "--hizui-model",
+        cfg.get("hizui_model", "MiniMax-M2.5"),
+        "--hizui-base-url",
+        cfg.get("hizui_base_url", "https://api.hizui.cn/v1"),
         "--max-output-tokens",
         str(cfg.get("max_output_tokens", 1200)),
     ]
