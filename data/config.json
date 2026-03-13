@@ -5,7 +5,7 @@
   "journal_keywords": [],
   "max_results": 20,
   "citation_min": null,
-  "provider": "gemini",
+  "provider": "openai",
   "openai_model": "gpt-5",
   "qwen_model": "qwen-turbo",
   "qwen_base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
