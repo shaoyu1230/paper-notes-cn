@@ -80,7 +80,7 @@ python3 /Users/angela/Documents/08_知识博主/paper-notes-cn/scripts/generate_
   --max-papers 10 \
   --provider minimax \
   --minimax-model MiniMax-M2.5 \
-  --minimax-base-url https://api.hizui.cn
+  --minimax-base-url https://api.hizui.cn/v1
 ```
 
 ## 每日自动化

@@ -223,7 +223,7 @@ def main() -> int:
     parser.add_argument("--minimax-model", default="MiniMax-M2.5", help="MiniMax model ID")
     parser.add_argument(
         "--minimax-base-url",
-        default="https://api.hizui.cn",
+        default="https://api.hizui.cn/v1",
         help="MiniMax OpenAI-compatible base_url",
     )
     parser.add_argument("--max-output-tokens", type=int, default=1200)

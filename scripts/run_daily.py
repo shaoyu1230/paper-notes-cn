@@ -118,7 +118,7 @@ def main() -> int:
         "--minimax-model",
         cfg.get("minimax_model", "MiniMax-M2.5"),
         "--minimax-base-url",
-        cfg.get("minimax_base_url", "https://api.hizui.cn"),
+        cfg.get("minimax_base_url", "https://api.hizui.cn/v1"),
         "--max-output-tokens",
         str(cfg.get("max_output_tokens", 1200)),
     ]

@@ -10,7 +10,7 @@
   "qwen_model": "qwen-turbo",
   "qwen_base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
   "minimax_model": "MiniMax-M2.5",
-  "minimax_base_url": "https://api.hizui.cn",
+  "minimax_base_url": "https://api.hizui.cn/v1",
   "max_output_tokens": 1200,
   "max_papers_per_day": 1
 }
