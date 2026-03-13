@@ -49,8 +49,23 @@ python3 /Users/angela/Documents/08_知识博主/paper-notes-cn/scripts/generate_
   --input-json /Users/angela/Documents/08_知识博主/paper-notes-cn/data/arxiv_filtered.json \
   --output-dir /Users/angela/Documents/08_知识博主/paper-notes-cn/drafts \
   --max-papers 10 \
-  --use-openai \
+  --provider openai \
   --openai-model gpt-5
+```
+
+5) 使用通义千问（Qwen）直接生成中文草稿
+
+```bash
+pip install -r /Users/angela/Documents/08_知识博主/paper-notes-cn/requirements.txt
+export DASHSCOPE_API_KEY="YOUR_API_KEY"
+
+python3 /Users/angela/Documents/08_知识博主/paper-notes-cn/scripts/generate_drafts.py \
+  --input-json /Users/angela/Documents/08_知识博主/paper-notes-cn/data/arxiv_filtered.json \
+  --output-dir /Users/angela/Documents/08_知识博主/paper-notes-cn/drafts \
+  --max-papers 10 \
+  --provider qwen \
+  --qwen-model qwen-plus \
+  --qwen-base-url https://dashscope.aliyuncs.com/compatible-mode/v1
 ```
 
 ## 每日自动化

@@ -3,9 +3,12 @@
   "keywords": ["single cell", "spatial", "tumor", "immun", "development", "cancer"],
   "authors": [],
   "journal_keywords": ["Nature", "Cell", "Science"],
-  "max_results": 200,
-  "citation_min": 100,
+  "max_results": 20,
+  "citation_min": null,
+  "provider": "qwen",
   "openai_model": "gpt-5",
-  "openai_max_output_tokens": 1200,
-  "max_papers_per_day": 5
+  "qwen_model": "qwen-plus",
+  "qwen_base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "max_output_tokens": 1200,
+  "max_papers_per_day": 1
 }

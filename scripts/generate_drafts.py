@@ -122,15 +122,61 @@ def run_openai(prompt: str, model: str, max_output_tokens: int) -> Optional[str]
         return None
 
 
+def run_qwen(prompt: str, model: str, max_output_tokens: int, base_url: str) -> Optional[str]:
+    try:
+        from openai import OpenAI
+    except ImportError:
+        print("OpenAI SDK not installed. Run: pip install openai", file=sys.stderr)
+        return None
+
+    api_key = os.environ.get("DASHSCOPE_API_KEY", "").strip()
+    if not api_key:
+        print("DASHSCOPE_API_KEY is not set.", file=sys.stderr)
+        return None
+
+    client = OpenAI(api_key=api_key, base_url=base_url)
+    try:
+        resp = client.responses.create(
+            model=model,
+            input=prompt,
+            max_output_tokens=max_output_tokens,
+        )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Qwen request failed: {exc}", file=sys.stderr)
+        return None
+
+    output_text = getattr(resp, "output_text", None)
+    if output_text:
+        return output_text.strip()
+
+    try:
+        chunks = []
+        for item in getattr(resp, "output", []) or []:
+            if item.get("type") == "message":
+                for c in item.get("content", []) or []:
+                    if c.get("type") == "output_text":
+                        chunks.append(c.get("text", ""))
+        text = "\n".join([c for c in chunks if c])
+        return text.strip() if text else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate Chinese draft notes from arXiv JSON.")
     parser.add_argument("--input-json", required=True, help="arXiv filtered JSON path")
     parser.add_argument("--output-dir", required=True, help="draft output directory")
     parser.add_argument("--max-papers", type=int, default=20)
     parser.add_argument("--use-llm", action="store_true", help="use LLM_COMMAND to generate body")
-    parser.add_argument("--use-openai", action="store_true", help="use OpenAI API to generate body")
+    parser.add_argument("--provider", default="openai", choices=["openai", "qwen"])
     parser.add_argument("--openai-model", default="gpt-5", help="OpenAI model ID")
-    parser.add_argument("--openai-max-output-tokens", type=int, default=1200)
+    parser.add_argument("--qwen-model", default="qwen-plus", help="Qwen model ID")
+    parser.add_argument(
+        "--qwen-base-url",
+        default="https://dashscope.aliyuncs.com/compatible-mode/v1",
+        help="Qwen OpenAI-compatible base_url",
+    )
+    parser.add_argument("--max-output-tokens", type=int, default=1200)
     parser.add_argument("--prompt-template", default=None, help="prompt template path")
     parser.add_argument("--fallback-body", default=None, help="fallback body template path")
     args = parser.parse_args()
@@ -173,14 +219,23 @@ def main() -> int:
 
         prompt = build_prompt(prompt_template, paper)
 
-        if args.use_openai:
+        if args.provider == "openai":
             openai_body = run_openai(
                 prompt=prompt,
                 model=args.openai_model,
-                max_output_tokens=args.openai_max_output_tokens,
+                max_output_tokens=args.max_output_tokens,
             )
             if openai_body:
                 body = openai_body
+        elif args.provider == "qwen":
+            qwen_body = run_qwen(
+                prompt=prompt,
+                model=args.qwen_model,
+                max_output_tokens=args.max_output_tokens,
+                base_url=args.qwen_base_url,
+            )
+            if qwen_body:
+                body = qwen_body
         elif args.use_llm and llm_command:
             llm_body = run_llm(prompt, llm_command)
             if llm_body:

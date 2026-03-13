@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -21,7 +21,7 @@ def load_config() -> Dict:
         return json.load(f)
 
 
-def run(cmd: List[str], env: Dict[str, str] | None = None) -> None:
+def run(cmd: List[str], env: Optional[Dict[str, str]] = None) -> None:
     proc = subprocess.run(cmd, env=env, check=False)
     if proc.returncode != 0:
         raise RuntimeError(f"Command failed: {' '.join(cmd)}")
@@ -34,9 +34,15 @@ def main() -> int:
         print(f"Missing arxiv_filter.py at: {ARXIV_FILTER}", file=sys.stderr)
         return 1
 
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("OPENAI_API_KEY is not set.", file=sys.stderr)
-        return 1
+    provider = cfg.get("provider", "openai")
+    if provider == "openai":
+        if not os.environ.get("OPENAI_API_KEY"):
+            print("OPENAI_API_KEY is not set.", file=sys.stderr)
+            return 1
+    elif provider == "qwen":
+        if not os.environ.get("DASHSCOPE_API_KEY"):
+            print("DASHSCOPE_API_KEY is not set.", file=sys.stderr)
+            return 1
 
     arxiv_cmd = [
         "python3",
@@ -80,11 +86,16 @@ def main() -> int:
         os.path.join(ROOT, "drafts"),
         "--max-papers",
         str(cfg.get("max_papers_per_day", 5)),
-        "--use-openai",
+        "--provider",
+        provider,
         "--openai-model",
         cfg.get("openai_model", "gpt-5"),
-        "--openai-max-output-tokens",
-        str(cfg.get("openai_max_output_tokens", 1200)),
+        "--qwen-model",
+        cfg.get("qwen_model", "qwen-plus"),
+        "--qwen-base-url",
+        cfg.get("qwen_base_url", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
+        "--max-output-tokens",
+        str(cfg.get("max_output_tokens", 1200)),
     ]
 
     run(generate_cmd, env=os.environ.copy())
