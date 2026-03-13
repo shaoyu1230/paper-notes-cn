@@ -206,13 +206,56 @@ def run_minimax(prompt: str, model: str, max_output_tokens: int, base_url: str) 
         return None
 
 
+def run_gemini(prompt: str, model: str, max_output_tokens: int, base_url: str) -> Optional[str]:
+    try:
+        from openai import OpenAI
+    except ImportError:
+        print("OpenAI SDK not installed. Run: pip install openai", file=sys.stderr)
+        return None
+
+    api_key = os.environ.get("GEMINI_API_KEY", "").strip() or os.environ.get("GOOGLE_API_KEY", "").strip()
+    if not api_key:
+        print("GEMINI_API_KEY (or GOOGLE_API_KEY) is not set.", file=sys.stderr)
+        return None
+
+    client = OpenAI(api_key=api_key, base_url=base_url)
+    try:
+        resp = client.responses.create(
+            model=model,
+            input=prompt,
+            max_output_tokens=max_output_tokens,
+        )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Gemini request failed: {exc}", file=sys.stderr)
+        return None
+
+    output_text = getattr(resp, "output_text", None)
+    if output_text:
+        return output_text.strip()
+
+    try:
+        chunks = []
+        for item in getattr(resp, "output", []) or []:
+            if item.get("type") == "message":
+                for c in item.get("content", []) or []:
+                    if c.get("type") == "output_text":
+                        chunks.append(c.get("text", ""))
+        text = "\n".join([c for c in chunks if c])
+        if text:
+            return text.strip()
+        print("Gemini returned empty content. Response items had no output_text.", file=sys.stderr)
+        return None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate Chinese draft notes from arXiv JSON.")
     parser.add_argument("--input-json", required=True, help="arXiv filtered JSON path")
     parser.add_argument("--output-dir", required=True, help="draft output directory")
     parser.add_argument("--max-papers", type=int, default=20)
     parser.add_argument("--use-llm", action="store_true", help="use LLM_COMMAND to generate body")
-    parser.add_argument("--provider", default="openai", choices=["openai", "qwen", "minimax"])
+    parser.add_argument("--provider", default="openai", choices=["openai", "qwen", "minimax", "gemini"])
     parser.add_argument("--openai-model", default="gpt-5", help="OpenAI model ID")
     parser.add_argument("--qwen-model", default="qwen-plus", help="Qwen model ID")
     parser.add_argument(
@@ -225,6 +268,12 @@ def main() -> int:
         "--minimax-base-url",
         default="https://api.hizui.cn/v1",
         help="MiniMax OpenAI-compatible base_url",
+    )
+    parser.add_argument("--gemini-model", default="MiniMax-M2.5", help="Gemini model ID")
+    parser.add_argument(
+        "--gemini-base-url",
+        default="https://api.hizui.cn",
+        help="Gemini OpenAI-compatible base_url",
     )
     parser.add_argument("--max-output-tokens", type=int, default=1200)
     parser.add_argument("--prompt-template", default=None, help="prompt template path")
@@ -295,6 +344,15 @@ def main() -> int:
             )
             if minimax_body:
                 body = minimax_body
+        elif args.provider == "gemini":
+            gemini_body = run_gemini(
+                prompt=prompt,
+                model=args.gemini_model,
+                max_output_tokens=args.max_output_tokens,
+                base_url=args.gemini_base_url,
+            )
+            if gemini_body:
+                body = gemini_body
         elif args.use_llm and llm_command:
             llm_body = run_llm(prompt, llm_command)
             if llm_body:
