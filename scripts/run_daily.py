@@ -14,11 +14,27 @@ ARXIV_FILTER = os.path.abspath(os.path.join(ROOT, "..", "arxiv_filter.py"))
 DATA_JSON = os.path.join(ROOT, "data", "arxiv_filtered.json")
 DATA_CSV = os.path.join(ROOT, "data", "arxiv_filtered.csv")
 CONFIG_PATH = os.path.join(ROOT, "data", "config.json")
+ENV_PATH = os.path.join(ROOT, ".env")
 
 
 def load_config() -> Dict:
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_env() -> None:
+    if not os.path.exists(ENV_PATH):
+        return
+    with open(ENV_PATH, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if key and key not in os.environ:
+                os.environ[key] = value
 
 
 def run(cmd: List[str], env: Optional[Dict[str, str]] = None) -> None:
@@ -28,6 +44,7 @@ def run(cmd: List[str], env: Optional[Dict[str, str]] = None) -> None:
 
 
 def main() -> int:
+    load_env()
     cfg = load_config()
 
     if not os.path.exists(ARXIV_FILTER):

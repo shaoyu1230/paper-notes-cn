@@ -10,3 +10,4 @@ venv/
 .venv/
 data/arxiv_filtered.json
 data/arxiv_filtered.csv
+.env
