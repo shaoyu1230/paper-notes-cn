@@ -60,6 +60,10 @@ def main() -> int:
         if not os.environ.get("DASHSCOPE_API_KEY"):
             print("DASHSCOPE_API_KEY is not set.", file=sys.stderr)
             return 1
+    elif provider == "minimax":
+        if not os.environ.get("MINIMAX_API_KEY"):
+            print("MINIMAX_API_KEY is not set.", file=sys.stderr)
+            return 1
 
     arxiv_cmd = [
         "python3",
@@ -111,6 +115,10 @@ def main() -> int:
         cfg.get("qwen_model", "qwen-plus"),
         "--qwen-base-url",
         cfg.get("qwen_base_url", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
+        "--minimax-model",
+        cfg.get("minimax_model", "MiniMax-M2.5"),
+        "--minimax-base-url",
+        cfg.get("minimax_base_url", "https://api.hizui.cn"),
         "--max-output-tokens",
         str(cfg.get("max_output_tokens", 1200)),
     ]

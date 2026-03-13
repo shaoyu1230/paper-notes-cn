@@ -163,19 +163,65 @@ def run_qwen(prompt: str, model: str, max_output_tokens: int, base_url: str) -> 
         return None
 
 
+def run_minimax(prompt: str, model: str, max_output_tokens: int, base_url: str) -> Optional[str]:
+    try:
+        from openai import OpenAI
+    except ImportError:
+        print("OpenAI SDK not installed. Run: pip install openai", file=sys.stderr)
+        return None
+
+    api_key = os.environ.get("MINIMAX_API_KEY", "").strip()
+    if not api_key:
+        print("MINIMAX_API_KEY is not set.", file=sys.stderr)
+        return None
+
+    client = OpenAI(api_key=api_key, base_url=base_url)
+    try:
+        resp = client.responses.create(
+            model=model,
+            input=prompt,
+            max_output_tokens=max_output_tokens,
+        )
+    except Exception as exc:  # noqa: BLE001
+        print(f"MiniMax request failed: {exc}", file=sys.stderr)
+        return None
+
+    output_text = getattr(resp, "output_text", None)
+    if output_text:
+        return output_text.strip()
+
+    try:
+        chunks = []
+        for item in getattr(resp, "output", []) or []:
+            if item.get("type") == "message":
+                for c in item.get("content", []) or []:
+                    if c.get("type") == "output_text":
+                        chunks.append(c.get("text", ""))
+        text = "\n".join([c for c in chunks if c])
+        return text.strip() if text else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate Chinese draft notes from arXiv JSON.")
     parser.add_argument("--input-json", required=True, help="arXiv filtered JSON path")
     parser.add_argument("--output-dir", required=True, help="draft output directory")
     parser.add_argument("--max-papers", type=int, default=20)
     parser.add_argument("--use-llm", action="store_true", help="use LLM_COMMAND to generate body")
-    parser.add_argument("--provider", default="openai", choices=["openai", "qwen"])
+    parser.add_argument("--provider", default="openai", choices=["openai", "qwen", "minimax"])
     parser.add_argument("--openai-model", default="gpt-5", help="OpenAI model ID")
     parser.add_argument("--qwen-model", default="qwen-plus", help="Qwen model ID")
     parser.add_argument(
         "--qwen-base-url",
         default="https://dashscope.aliyuncs.com/compatible-mode/v1",
         help="Qwen OpenAI-compatible base_url",
+    )
+    parser.add_argument("--minimax-model", default="MiniMax-M2.5", help="MiniMax model ID")
+    parser.add_argument(
+        "--minimax-base-url",
+        default="https://api.hizui.cn",
+        help="MiniMax OpenAI-compatible base_url",
     )
     parser.add_argument("--max-output-tokens", type=int, default=1200)
     parser.add_argument("--prompt-template", default=None, help="prompt template path")
@@ -237,6 +283,15 @@ def main() -> int:
             )
             if qwen_body:
                 body = qwen_body
+        elif args.provider == "minimax":
+            minimax_body = run_minimax(
+                prompt=prompt,
+                model=args.minimax_model,
+                max_output_tokens=args.max_output_tokens,
+                base_url=args.minimax_base_url,
+            )
+            if minimax_body:
+                body = minimax_body
         elif args.use_llm and llm_command:
             llm_body = run_llm(prompt, llm_command)
             if llm_body:

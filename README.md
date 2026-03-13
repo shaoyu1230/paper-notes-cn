@@ -68,6 +68,21 @@ python3 /Users/angela/Documents/08_知识博主/paper-notes-cn/scripts/generate_
   --qwen-base-url https://dashscope.aliyuncs.com/compatible-mode/v1
 ```
 
+6) 使用 MiniMax（M2.5）直接生成中文草稿
+
+```bash
+pip install -r /Users/angela/Documents/08_知识博主/paper-notes-cn/requirements.txt
+export MINIMAX_API_KEY="YOUR_API_KEY"
+
+python3 /Users/angela/Documents/08_知识博主/paper-notes-cn/scripts/generate_drafts.py \
+  --input-json /Users/angela/Documents/08_知识博主/paper-notes-cn/data/arxiv_filtered.json \
+  --output-dir /Users/angela/Documents/08_知识博主/paper-notes-cn/drafts \
+  --max-papers 10 \
+  --provider minimax \
+  --minimax-model MiniMax-M2.5 \
+  --minimax-base-url https://api.hizui.cn
+```
+
 ## 每日自动化
 
 编辑配置文件：
