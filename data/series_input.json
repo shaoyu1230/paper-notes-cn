@@ -1,5 +1,51 @@
 [
   {
+    "arxiv_id": "10.1038/s43018-024-00892-0",
+    "title": "ETV7 limits the antiviral and antitumor efficacy of CD8+ T cells by diverting their fate toward exhaustion",
+    "authors": [
+      "Mu Hao",
+      "Hailiang Chen",
+      "Linjie Xiao",
+      "Yuyan Zhang",
+      "Yongfeng Chen",
+      "Huanhuan Zhou",
+      "Yupeng Wang",
+      "Ke Li",
+      "Jianfeng Zhang",
+      "Xinwen Zhang",
+      "Xiaomin Pan",
+      "Huadeng Chen",
+      "Zemin Zhang",
+      "Hailiang Liu",
+      "Hongchun Li",
+      "Ailian Li",
+      "Qiang Gao",
+      "Zemin Zhang",
+      "Zheng Yang",
+      "Yuanzhong Chen",
+      "Xun Wang",
+      "Rui He",
+      "Hao Sun",
+      "Jing Jin",
+      "Xin Xie",
+      "Qiang Gao",
+      "Zemin Zhang",
+      "Hailiang Liu",
+      "Fan Wang"
+    ],
+    "published": "2025-01-13",
+    "updated": "2025-01-13",
+    "summary": "Terminal exhaustion is a critical barrier to antitumor immunity. By integrating and analyzing single-cell RNA-sequencing and single-cell assay for transposase-accessible chromatin with sequencing data, we found that ETS variant 7 (ETV7) is indispensable for determining CD8",
+    "doi": "10.1038/s43018-024-00892-0",
+    "journal_ref": "Nature Cancer",
+    "primary_category": "Nature Cancer",
+    "categories": [
+      "Nature Cancer"
+    ],
+    "pdf_url": "",
+    "arxiv_url": "https://www.nature.com/articles/s43018-024-00892-0"
+  },
+  {
     "arxiv_id": "10.1126/science.adv7434",
     "title": "All-optical synthesis chip for large-scale intelligent semantic vision generation",
     "authors": [

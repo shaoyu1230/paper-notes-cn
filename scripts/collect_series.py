@@ -68,6 +68,8 @@ def main() -> int:
     parser.add_argument("--from-date", required=True)
     parser.add_argument("--until-date", required=True)
     parser.add_argument("--rows", type=int, default=200)
+    parser.add_argument("--expand-initials", action="store_true")
+    parser.add_argument("--manual-json", default=None)
     parser.add_argument("--output-json", required=True)
     parser.add_argument("--output-csv", required=True)
     args = parser.parse_args()
@@ -75,7 +77,19 @@ def main() -> int:
     candidates: List[Dict] = []
     seen = set()
 
+    author_terms: List[str] = []
     for author in args.authors:
+        author_terms.append(author)
+        if args.expand_initials:
+            parts = author.split()
+            if len(parts) >= 2:
+                first = parts[0]
+                last = parts[-1]
+                initial = f"{first[0]}."
+                author_terms.append(f"{initial} {last}")
+                author_terms.append(f"{first[0]} {last}")
+
+    for author in author_terms:
         items = crossref_query(author, args.from_date, args.until_date, args.rows)
         for item in items:
             container = pick_container_title(item)
@@ -96,6 +110,18 @@ def main() -> int:
                     "type": item.get("type", ""),
                 }
             )
+
+    if args.manual_json:
+        with open(args.manual_json, "r", encoding="utf-8") as f:
+            manual_items = json.load(f)
+        for item in manual_items:
+            doi = item.get("doi", "")
+            key = doi or item.get("url", "")
+            if key and key in seen:
+                continue
+            if key:
+                seen.add(key)
+            candidates.append(item)
 
     candidates.sort(key=lambda x: (x["issued"], x["journal"], x["title"]))
 
