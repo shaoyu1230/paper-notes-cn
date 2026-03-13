@@ -53,6 +53,21 @@ python3 /Users/angela/Documents/08_知识博主/paper-notes-cn/scripts/generate_
   --openai-model gpt-5
 ```
 
+## 每日自动化
+
+编辑配置文件：
+
+```bash
+open /Users/angela/Documents/08_知识博主/paper-notes-cn/data/config.json
+```
+
+运行每日流程（获取论文 -> 生成草稿 -> 提交推送）：
+
+```bash
+export OPENAI_API_KEY="YOUR_API_KEY"
+python3 /Users/angela/Documents/08_知识博主/paper-notes-cn/scripts/run_daily.py
+```
+
 ## 草稿规范
 
 草稿文件名格式：`YYYY-MM-DD_arXivID.md`  
