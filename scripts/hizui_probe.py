@@ -8,7 +8,27 @@ import sys
 import requests
 
 
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+ENV_PATH = os.path.join(ROOT, ".env")
+
+
+def load_env() -> None:
+    if not os.path.exists(ENV_PATH):
+        return
+    with open(ENV_PATH, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if key and key not in os.environ:
+                os.environ[key] = value
+
+
 def main() -> int:
+    load_env()
     api_key = os.environ.get("GEMINI_API_KEY", "").strip() or os.environ.get("GOOGLE_API_KEY", "").strip()
     if not api_key:
         print("GEMINI_API_KEY (or GOOGLE_API_KEY) is not set.", file=sys.stderr)
