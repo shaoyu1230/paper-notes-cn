@@ -158,7 +158,10 @@ def run_qwen(prompt: str, model: str, max_output_tokens: int, base_url: str) -> 
                     if c.get("type") == "output_text":
                         chunks.append(c.get("text", ""))
         text = "\n".join([c for c in chunks if c])
-        return text.strip() if text else None
+        if text:
+            return text.strip()
+        print("MiniMax returned empty content. Response items had no output_text.", file=sys.stderr)
+        return None
     except Exception:  # noqa: BLE001
         return None
 
