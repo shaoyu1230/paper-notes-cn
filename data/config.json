@@ -1,8 +1,8 @@
 {
-  "categories": ["q-bio.TO", "q-bio.GN", "q-bio.CB", "q-bio.MN", "q-bio.BM", "q-bio.NC"],
-  "keywords": [],
+  "categories": [],
+  "keywords": ["single cell"],
   "authors": [],
-  "journal_keywords": ["Nature", "Cell", "Science"],
+  "journal_keywords": [],
   "max_results": 20,
   "citation_min": null,
   "provider": "qwen",
