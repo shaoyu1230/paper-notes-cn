@@ -1,6 +1,6 @@
 {
   "categories": ["q-bio.TO", "q-bio.GN", "q-bio.CB", "q-bio.MN", "q-bio.BM", "q-bio.NC"],
-  "keywords": ["single cell", "spatial", "tumor", "immun", "development", "cancer"],
+  "keywords": [],
   "authors": [],
   "journal_keywords": ["Nature", "Cell", "Science"],
   "max_results": 20,
