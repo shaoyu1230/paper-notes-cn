@@ -34,9 +34,10 @@ def read_text(path: str) -> str:
 def build_front_matter(paper: Dict) -> str:
     authors = paper.get("authors") or []
     categories = paper.get("categories") or []
+    safe_title = paper.get("title", "").replace('"', "'")
     lines = [
         "---",
-        f'title: "{paper.get("title", "").replace(\'"\', "\'")}"',
+        f'title: "{safe_title}"',
         f"arxiv_id: {paper.get('arxiv_id', '')}",
         f"published: {paper.get('published', '')}",
         f"updated: {paper.get('updated', '')}",
