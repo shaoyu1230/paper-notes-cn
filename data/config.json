@@ -14,5 +14,6 @@
   "gemini_model": "MiniMax-M2.5",
   "gemini_base_url": "https://api.hizui.cn",
   "max_output_tokens": 1200,
-  "max_papers_per_day": 1
+  "max_papers_per_day": 1,
+  "force_regen": true
 }

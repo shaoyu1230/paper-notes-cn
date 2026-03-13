@@ -130,6 +130,8 @@ def main() -> int:
         "--max-output-tokens",
         str(cfg.get("max_output_tokens", 1200)),
     ]
+    if cfg.get("force_regen"):
+        generate_cmd.append("--force")
 
     run(generate_cmd, env=os.environ.copy())
 

@@ -113,6 +113,8 @@ export OPENAI_API_KEY="YOUR_API_KEY"
 python3 /Users/angela/Documents/08_知识博主/paper-notes-cn/scripts/run_daily.py
 ```
 
+强制重新生成草稿：在 `data/config.json` 里将 `force_regen` 设为 `true`。
+
 ## 草稿规范
 
 草稿文件名格式：`YYYY-MM-DD_arXivID.md`  

@@ -254,6 +254,7 @@ def main() -> int:
     parser.add_argument("--input-json", required=True, help="arXiv filtered JSON path")
     parser.add_argument("--output-dir", required=True, help="draft output directory")
     parser.add_argument("--max-papers", type=int, default=20)
+    parser.add_argument("--force", action="store_true", help="overwrite existing drafts")
     parser.add_argument("--use-llm", action="store_true", help="use LLM_COMMAND to generate body")
     parser.add_argument("--provider", default="openai", choices=["openai", "qwen", "minimax", "gemini"])
     parser.add_argument("--openai-model", default="gpt-5", help="OpenAI model ID")
@@ -310,7 +311,7 @@ def main() -> int:
         filename = safe_filename(f"{date_prefix}_{arxiv_id}.md")
         out_path = os.path.join(args.output_dir, filename)
 
-        if os.path.exists(out_path):
+        if os.path.exists(out_path) and not args.force:
             continue
 
         front_matter = build_front_matter(paper)
